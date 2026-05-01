@@ -64,19 +64,26 @@ public class Triangle {
 
         int used = -1;
 
+//        System.out.println("lone vertex index: " + loneVertexIndex);
+
+        int[] unlonelyVertices;
+
+        switch (loneVertexIndex) {
+            case 0:
+                unlonelyVertices = new int[]{1, 2};
+                break;
+            case 1:
+                unlonelyVertices = new int[]{0, 2};
+                break;
+            default:
+                unlonelyVertices = new int[]{0, 1};
+                break;
+        }
+
         for (int i = 0; i < 2; i++) {
-            int secondVertexIndex = 0;
 
-            while (secondVertexIndex != loneVertexIndex && secondVertexIndex != used) {
-                secondVertexIndex++;
-
-                if (secondVertexIndex == 3)
-                    secondVertexIndex = 0;
-            }
-
-            used = secondVertexIndex;
-
-            endpoints[i] = findIntersection(vertices[loneVertexIndex], vertices[secondVertexIndex], layerZ);
+            endpoints[i] = findIntersection(vertices[unlonelyVertices[i]], vertices[loneVertexIndex], layerZ);
+//            System.out.println("endpoint " + i + ": lone=" + loneVertexIndex + "  second=" + unlonelyVertices[i]);
         }
 
         return endpoints;
@@ -84,9 +91,10 @@ public class Triangle {
 
     public double[] findIntersection(double[] vertex1, double[] vertex2, double layerZ) {
         double interpolationValue = (layerZ - vertex1[2])/(vertex2[2] - vertex1[2]);
+//        System.out.println("interp value: (" + layerZ + " - " + vertex1[2] + ")/(" + vertex2[2] + " - " + vertex1[2] + ")" );
 
         double x = ((vertex2[0] - vertex1[0]) * interpolationValue) + vertex1[0];
-        double y = ((vertex2[1] - vertex1[1]) * interpolationValue) + vertex1[0];
+        double y = ((vertex2[1] - vertex1[1]) * interpolationValue) + vertex1[1];
 
         return new double[] {x, y};
     }
