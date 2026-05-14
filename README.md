@@ -80,6 +80,5 @@ A few values are currently hardcoded and can be adjusted in the source:
 ## Known Limitations
 
 - Only binary STL format is supported.
-- Layer count upper bound in `Window.java` is hardcoded to `86` and should be updated to match the actual model height.
 - Infill intersection ordering assumes intersections come in pairs; malformed or very complex perimeters may cause incorrect infill.
 - No support for multiple perimeter shells or variable infill density.
