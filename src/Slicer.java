@@ -1,6 +1,4 @@
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class Slicer {
 
@@ -70,6 +68,11 @@ public class Slicer {
     }
 
     public LineSegment[] createInfillForLayer (LineSegment[] slicedLayer, double infillSpacing, double[] bounds) {
+        bounds[0] -= 1;
+        bounds[1] += 1;
+        bounds[2] += 1;
+        bounds[3] -= 1;
+
         LineSegment[] diagonals = createDiagonalsForInfill(infillSpacing, bounds);
 
         ArrayList<LineSegment> innerLines = new ArrayList<>();
@@ -79,15 +82,43 @@ public class Slicer {
         // for each intersection, order it in a list of intersections
         // then create new line segments based on the fact that those intersections have to alternate
         for (int i = 0; i < diagonals.length; i++) {
-            for (int j = 0; j < slicedLayer.length; j++) {
-                boolean firstEndpointAboveLine = false;
-                boolean secondEndpointAboveLine = false;
 
-//                if (slicedLayer[j].endpoint1)
+            ArrayList<double[]> intersectionEndpoints = new ArrayList<>();
+
+            for (int j = 0; j < slicedLayer.length; j++) {
+                boolean firstEndpointAboveDiagonal = false;
+                boolean secondEndpointAboveDiagonal = false;
+
+                if (diagonals[i].isPointAboveLine(slicedLayer[j].endpoint1)) {
+                    firstEndpointAboveDiagonal = true;
+                }
+                if (diagonals[i].isPointAboveLine(slicedLayer[j].endpoint2)) {
+                    secondEndpointAboveDiagonal = true;
+                }
+
+                if (firstEndpointAboveDiagonal != secondEndpointAboveDiagonal) {
+
+//                    innerLines.add(diagonals[i]);
+
+                    double[] intersection = diagonals[i].findIntersectionWithLine(slicedLayer[j]);
+
+                    intersectionEndpoints.add(intersection);
+                }
+            }
+
+            while (!intersectionEndpoints.isEmpty()) {
+                double[] first = intersectionEndpoints.remove(0);
+                double[] second = intersectionEndpoints.remove(0);
+
+                LineSegment line = new LineSegment(first, second);
+
+                innerLines.add(line);
+
+
             }
         }
-
-
+        return innerLines.toArray(new LineSegment[0]);
+//        return diagonals;
     }
 
     public LineSegment[] createDiagonalsForInfill (double infillSpacing, double[] bounds) {
@@ -105,7 +136,7 @@ public class Slicer {
 
             double[] endpoint1 = new double[]{bounds[0], bounds[2] - (increment*infillSpacing)};
             double[] endpoint2 = new double[]{bounds[0] + (increment*infillSpacing), bounds[2]};
-            LineSegment infillLine = new LineSegment(endpoint1, endpoint2);
+            LineSegment infillLine = new LineSegment(endpoint1, endpoint2, endpoint2[0] + endpoint2[1]);
 
             infillArrayList.add(infillLine);
 
@@ -116,7 +147,7 @@ public class Slicer {
 
             double[] endpoint1 = new double[]{bounds[0] + ((increment-length)*infillSpacing), bounds[2] - (length*infillSpacing)};
             double[] endpoint2 = new double[]{bounds[0] + (length*infillSpacing), bounds[2] - ((increment-length)*infillSpacing)};
-            LineSegment infillLine = new LineSegment(endpoint1, endpoint2);
+            LineSegment infillLine = new LineSegment(endpoint1, endpoint2, endpoint1[0] + endpoint1[1]);
 
             infillArrayList.add(infillLine);
 

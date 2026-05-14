@@ -31,7 +31,7 @@ public class Window extends JFrame {
     }
 
     public void shiftLayerUp(int amt) {
-        layerIndex = Math.min(model.length, layerIndex+amt);
+        layerIndex = Math.min(86, layerIndex+amt);
     }
 
     public void shiftLayerDown(int amt) {
@@ -53,9 +53,9 @@ public class Window extends JFrame {
             }
         }
 
+//        g.fillRect(245, 295, 10, 10);
+
         g.fillRect(WINDOW_WIDTH/2, 0, 10, WINDOW_HEIGHT);
-
-
 
         Font standardFont = new Font("arial", Font.PLAIN, 60);
         g.setFont(standardFont);

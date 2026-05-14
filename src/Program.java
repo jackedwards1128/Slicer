@@ -28,6 +28,11 @@ public class Program implements ActionListener, KeyListener {
         double highestPoint = -1;
 
         for (int i = 0; i < numTriangles; i++) {
+
+            if (i % 1000 == 0) {
+                System.out.println("Done w " + i + " triangles");
+            }
+
             double[][] vertices = new double[3][3];
 
             // Burn the first 12 bytes which represent the normal vector, which we do not need
@@ -55,6 +60,8 @@ public class Program implements ActionListener, KeyListener {
         slicer = new Slicer(0.3, highestPoint);
 
         LineSegment[][] sliced = slicer.slice(model);
+
+        System.out.println("window created");
 
         window = new Window(this);
 
